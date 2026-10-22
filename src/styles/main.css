@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgb(255 255 255 / 0.55), transparent 55%),
+      repeating-linear-gradient(0deg, rgb(30 34 41 / 0.025) 0 1px, transparent 1px 28px);
+  }
+
+  :focus-visible {
+    @apply outline outline-[3px] outline-offset-2 outline-coral-ink;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display font-extrabold tracking-tight;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .salto {
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-toast focus:rounded-ficha focus:bg-tinta focus:px-4 focus:py-3 focus:text-papel-claro;
+  }
+
+  .etiqueta {
+    @apply font-mono text-etiqueta uppercase text-tinta-suave;
+  }
+
+  .ficha {
+    @apply rounded-ficha border border-linea bg-papel-claro shadow-ficha;
+  }
+
+  .btn {
+    @apply inline-flex min-h-tactil items-center justify-center gap-2 rounded-ficha px-4 font-sans text-sm font-semibold transition-colors duration-corta ease-salida disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primario {
+    @apply btn bg-tinta text-papel-claro hover:bg-tinta-suave;
+  }
+
+  .btn-secundario {
+    @apply btn border border-tinta/70 bg-papel-claro text-tinta hover:bg-papel-oscuro;
+  }
+
+  .btn-pista {
+    @apply btn bg-ambar text-tinta hover:bg-ambar-claro;
+  }
+
+  .btn-icono {
+    @apply inline-flex size-tactil items-center justify-center rounded-ficha text-tinta transition-colors hover:bg-papel-oscuro;
+  }
+
+  .sello {
+    @apply inline-flex items-center gap-2 rounded-ficha px-3 py-1.5 font-mono text-etiqueta font-medium uppercase shadow-sello;
+  }
+
+  .slider {
+    @apply h-tactil w-full cursor-pointer accent-coral-ink;
+  }
+
+  /* Halo de linterna de la apertura: --halo-x / --halo-y se actualizan desde JS. */
+  .halo-mascara {
+    -webkit-mask-image: radial-gradient(
+      circle 9rem at var(--halo-x, 50%) var(--halo-y, 40%),
+      #000 0 55%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      circle 9rem at var(--halo-x, 50%) var(--halo-y, 40%),
+      #000 0 55%,
+      transparent 100%
+    );
+  }
+
+  .halo-luz {
+    background: radial-gradient(
+      circle 11rem at var(--halo-x, 50%) var(--halo-y, 40%),
+      rgb(247 223 180 / 0.55),
+      transparent 70%
+    );
+  }
+}
+
+@layer base {
+  /* Los títulos reciben foco por código al cambiar de pantalla; no son controles. */
+  [tabindex='-1']:focus {
+    outline: none;
+  }
+}
