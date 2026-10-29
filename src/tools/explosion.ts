@@ -5,10 +5,10 @@ import type { ExamTool, ToolContext } from './types';
 
 /** Dirección en que sale cada pieza del interruptor con la explosión abierta al 100 %. */
 const DIRECTIONS: Partial<Record<PieceName, Vector3>> = {
-  boton: new Vector3(-0.28, 0.7, 0.14),
-  resorte: new Vector3(0.32, 0.42, 0.36),
-  contacto: new Vector3(-0.32, 0.28, 0.36),
-  base_interruptor: new Vector3(0.36, 0.18, -0.1),
+  boton: new Vector3(-0.14, 0.36, 0.07),
+  resorte: new Vector3(0.16, 0.22, 0.18),
+  contacto: new Vector3(-0.16, 0.14, 0.18),
+  base_interruptor: new Vector3(0.18, 0.08, -0.05),
 };
 
 export function createExplosion(context: ToolContext): ExamTool {
@@ -17,12 +17,15 @@ export function createExplosion(context: ToolContext): ExamTool {
     activate() {
       const center = context.model.center('base_interruptor');
       context.panel.frame({
-        target: [center.x, center.y + 0.35, center.z],
+        target: [center.x, center.y + 0.18, center.z],
         direction: [0.35, 0.4, 1],
-        size: 2.3,
+        size: 1.25,
       });
       context.labels.show(
-        EXPLOSION_ORDER.map((piece, index) => ({ piece, text: String(index + 1) })),
+        EXPLOSION_ORDER.filter((piece) => context.model.get(piece)).map((piece, index) => ({
+          piece,
+          text: String(index + 1),
+        })),
       );
     },
     deactivate() {

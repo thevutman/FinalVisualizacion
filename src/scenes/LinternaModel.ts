@@ -3,6 +3,7 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { PIECE_NAMES, type PieceName } from '../data/pieces';
 import { buildPlaceholderLinterna } from './placeholderLinterna';
+import { supplementMissingPieces } from './supplementPieces';
 
 const MODEL_URL = `${import.meta.env.BASE_URL}models/linterna.glb`;
 /** Largo al que se normaliza cualquier modelo, para que encuadres y desplazamientos sirvan igual. */
@@ -29,7 +30,9 @@ export class LinternaModel {
   static async load(): Promise<LinternaModel> {
     // La etiqueta provisional se dibuja con las fuentes del proyecto.
     await document.fonts.ready;
-    const content = (await loadGlb()) ?? buildPlaceholderLinterna();
+    const glb = await loadGlb();
+    if (glb) supplementMissingPieces(glb);
+    const content = glb ?? buildPlaceholderLinterna();
     isolateMaterials(content);
     return new LinternaModel(content);
   }
@@ -89,7 +92,7 @@ export class LinternaModel {
       const object = content.getObjectByName(name);
       if (!object) {
         console.warn(
-          `[LinternaModel] Falta la pieza "${name}" en el modelo. Su pista sigue disponible desde los botones.`,
+          `[LinternaModel] Falta la pieza "${name}" en el modelo: las herramientas siguen funcionando sin ella.`,
         );
         continue;
       }

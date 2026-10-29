@@ -74,19 +74,37 @@ Todo el texto vive en `src/data/`:
 
 La paleta y las fuentes son provisionales. Para usar las de la infografía, cambia `colors` y `fontFamily` en `tailwind.config.ts` y el enlace de Google Fonts en `index.html`.
 
-## Reemplazar el modelo 3D
+## El modelo 3D
 
-1. Exporta desde Blender a `public/models/linterna.glb` (glTF binario, con compresión Draco y texturas de 2k como máximo).
-2. Nombra cada objeto exactamente así:
+`public/models/linterna.glb` (2,4 MB) se arma a partir de las 12 piezas de `modelos/piezas/` con un script. Cada pieza original pesaba entre 22 y 107 MB; las de `modelos/piezas/` ya están optimizadas (polígonos simplificados y texturas WebP de 512 o 1024 px).
+
+### Ajustar el montaje
+
+`modelos/montaje.json` define, para cada pieza, su archivo, sus giros (`[eje, grados]`, en orden), su escala y la posición de su centro. El eje largo de la linterna es X (la cabeza hacia +X) y "arriba" es Y. Después de editarlo:
+
+```bash
+npm run modelo
+```
+
+El script une las piezas, le pone a cada una su nombre exacto y comprime el resultado con Draco. Las dos pilas salen de la misma pieza (`pila.glb`) dentro del grupo `pilas`.
+
+### Agregar o cambiar una pieza
+
+1. Optimiza el archivo original (ajusta `--simplify-ratio` para quedar entre 5 y 40 mil triángulos):
+
+   ```bash
+   npx gltf-transform optimize original.glb modelos/piezas/pieza.glb --compress false --texture-compress webp --texture-size 1024 --simplify-ratio 0.02 --simplify-error 0.01
+   ```
+
+2. Agrégala a `modelos/montaje.json` con uno de estos nombres y ejecuta `npm run modelo`:
 
    `carcasa`, `cabeza`, `reflector`, `lente`, `bombilla`, `portabombilla`, `pelo`, `resorte`, `boton`, `contacto`, `base_interruptor`, `pilas`, `tapa`, `correa`, `etiqueta_2019`, `muescas`, `huellas`
 
-   `huellas` es la calcomanía de huellas y tierra sobre la carcasa (pista 5). Una pieza puede ser una malla o un grupo; una pieza anidada (por ejemplo `pelo` dentro de `portabombilla`) se reconoce igual.
+### Piezas que el modelo no trae
 
-3. Modela cada pieza en su posición armada, con el eje largo de la linterna en X, la cabeza hacia +X y "arriba" en +Z de Blender (+Y en glTF). El modelo se escala y se centra solo.
-4. Recarga la página. Si falta una pieza, la app no se rompe: avisa por consola y su pista sigue disponible con "Mostrarme la pista".
+`pelo`, `muescas`, `etiqueta_2019` y `huellas` (las piezas de las pistas 1, 3, 4 y 5) todavía no están modeladas. La app las toma de la linterna provisional y las encaja sola dentro de la pieza que las contiene (`portabombilla` o `carcasa`), ajustadas a su tamaño. Si algún día se modelan, basta con agregarlas al montaje: la versión provisional deja de usarse.
 
-Mientras no exista el archivo, se usa una linterna provisional hecha con formas básicas y con los mismos nombres.
+Si `linterna.glb` no existe, se usa entera la linterna provisional hecha con formas básicas. Si falta cualquier otra pieza, la app no se rompe: avisa por consola.
 
 ## Accesibilidad y rendimiento
 

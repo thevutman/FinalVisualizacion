@@ -277,15 +277,16 @@ function etiqueta(): Mesh {
     0.24,
     -0.02,
   );
-  mesh.position.z = 0.06;
-  mesh.rotation.set(0.08, -0.25, 0.05);
+  // Pegada a la pared, delante de las pilas: se ve apenas la carcasa se vuelve transparente.
+  mesh.position.z = 0.2;
+  mesh.rotation.set(0.08, -0.12, 0.05);
   return mesh;
 }
 
 /** 8 rayas en la pared interior del porta pilas, del lado de atrás y arriba. */
 function muescas(): Group {
   const group = named('muescas', new Group());
-  const material = new MeshStandardMaterial({ color: '#EADFC8', roughness: 0.9 });
+  const material = new MeshStandardMaterial({ color: '#2A1D1A', roughness: 0.9 });
   for (let i = 0; i < 8; i += 1) {
     const angle = 0.55 + Math.sin(i * 1.7) * 0.04;
     const radius = 0.256;

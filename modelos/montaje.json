@@ -1,0 +1,103 @@
+{
+  "_nota": "Montaje de la linterna a partir de las piezas de modelos/piezas. Eje largo = X (cabeza hacia +X), arriba = Y. 'giros' se aplican en orden: [eje, grados]. 'escala' es uniforme. 'posicion' es el centro de la pieza. Ejecuta: npm run modelo",
+  "salida": "public/models/linterna.glb",
+  "piezas": [
+    {
+      "nombre": "carcasa",
+      "archivo": "carcasa.glb",
+      "giros": [],
+      "escala": 0.75,
+      "posicion": [0, 0, 0]
+    },
+    {
+      "nombre": "cabeza",
+      "archivo": "cabeza.glb",
+      "giros": [["y", 90]],
+      "escala": 0.75,
+      "posicion": [0.875, 0, 0]
+    },
+    {
+      "nombre": "lente",
+      "archivo": "lente.glb",
+      "giros": [["y", 90]],
+      "escala": 0.47,
+      "posicion": [1.57, 0, 0]
+    },
+    {
+      "nombre": "portabombilla",
+      "archivo": "portabombilla.glb",
+      "giros": [["z", -90]],
+      "escala": 0.22,
+      "posicion": [1, 0, 0]
+    },
+    {
+      "nombre": "bombilla",
+      "archivo": "bombilla.glb",
+      "giros": [["z", -90]],
+      "escala": 0.2,
+      "posicion": [1.34, 0, 0]
+    },
+    {
+      "nombre": "base_interruptor",
+      "archivo": "base_interruptor.glb",
+      "giros": [
+        ["z", -90],
+        ["x", 90]
+      ],
+      "escala": 0.19,
+      "posicion": [0.25, 0.335, 0]
+    },
+    {
+      "nombre": "contacto",
+      "archivo": "contacto.glb",
+      "giros": [["x", 90]],
+      "escala": 0.137,
+      "posicion": [0.25, 0.4, 0]
+    },
+    {
+      "nombre": "resorte",
+      "archivo": "resorte.glb",
+      "giros": [],
+      "escala": 0.07,
+      "posicion": [0.25, 0.44, 0]
+    },
+    {
+      "nombre": "boton",
+      "archivo": "boton.glb",
+      "giros": [],
+      "escala": 0.075,
+      "posicion": [0.25, 0.5, 0]
+    },
+    {
+      "nombre": "pilas",
+      "grupo": [
+        {
+          "archivo": "pila.glb",
+          "giros": [["z", -90]],
+          "escala": 0.36,
+          "posicion": [-0.35, 0, 0]
+        },
+        {
+          "archivo": "pila.glb",
+          "giros": [["z", -90]],
+          "escala": 0.36,
+          "posicion": [0.34, 0, 0]
+        }
+      ]
+    },
+    {
+      "nombre": "tapa",
+      "archivo": "tapa.glb",
+      "giros": [["y", 90]],
+      "escala": 0.427,
+      "posicion": [-0.72, 0, 0]
+    },
+    {
+      "nombre": "correa",
+      "archivo": "correa.glb",
+      "giros": [["z", -90]],
+      "escala": 0.26,
+      "posicion": [-1.325, 0, 0]
+    }
+  ]
+}

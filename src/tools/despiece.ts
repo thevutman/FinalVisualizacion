@@ -5,15 +5,15 @@ import type { ExamTool, ToolContext } from './types';
 
 /** Separación de cada pieza a lo largo del eje de la linterna (+X = hacia la cabeza). */
 const AXIS_OFFSETS: Partial<Record<PieceName, number>> = {
-  lente: 1.3,
-  cabeza: 1.0,
+  lente: 1.75,
+  cabeza: 1.35,
   reflector: 0.55,
-  bombilla: 0.35,
-  portabombilla: 0.15,
-  pelo: 0.15,
-  pilas: -1.25,
-  tapa: -1.35,
-  correa: -1.35,
+  bombilla: 0.2,
+  portabombilla: 0.05,
+  pelo: 0.05,
+  pilas: -1.2,
+  tapa: -1.6,
+  correa: -1.6,
 };
 
 const MOVED = Object.keys(AXIS_OFFSETS) as PieceName[];
@@ -22,9 +22,12 @@ export function createDespiece(context: ToolContext): ExamTool {
   return {
     id: 'despiece',
     activate() {
-      context.panel.frame({ target: [0, 0, 0], direction: [0, 0.4, 1], size: 5.4 });
+      context.panel.frame({ target: [0, 0, 0], direction: [0, 0.4, 1], size: 6.2 });
       context.labels.show(
-        DESPIECE_ORDER.map((piece, index) => ({ piece, text: String(index + 1) })),
+        DESPIECE_ORDER.filter((piece) => context.model.get(piece)).map((piece, index) => ({
+          piece,
+          text: String(index + 1),
+        })),
       );
     },
     deactivate() {

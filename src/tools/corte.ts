@@ -25,7 +25,9 @@ const CLIPPED: readonly PieceName[] = [
   'etiqueta_2019',
 ];
 
-const SECTION_COLOR = '#E2574C';
+/** Cara de corte: coral claro, para que las piezas de adentro resalten sobre ella. */
+const SECTION_COLOR = '#F2C4BC';
+const KNIFE_COLOR = '#E2574C';
 
 /**
  * Corte longitudinal: dos planos de recorte en intersección quitan la mitad frontal
@@ -136,7 +138,7 @@ function createKnife(): Mesh<PlaneGeometry, MeshBasicMaterial> {
   const knife = new Mesh(
     new PlaneGeometry(1, 1),
     new MeshBasicMaterial({
-      color: SECTION_COLOR,
+      color: KNIFE_COLOR,
       transparent: true,
       opacity: 0.14,
       side: DoubleSide,
