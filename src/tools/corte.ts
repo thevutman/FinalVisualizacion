@@ -115,22 +115,14 @@ export function createCorte(context: ToolContext): ExamTool {
       panel.invalidate();
     },
     update: () => false,
-    setValue(value) {
+    setValue(value, seconds) {
       gsap.to(progress, {
         value,
-        duration: duration(0.2),
+        duration: duration(seconds),
         ease: EASE_OUT,
         overwrite: 'auto',
         onUpdate: applyHandle,
       });
-    },
-    select: () => undefined,
-    blockedHint(piece) {
-      if (piece !== 'muescas') return null;
-      const target = model.center('muescas');
-      return target.x < handlePlane.constant
-        ? 'Corta más: las muescas están dentro del compartimento de pilas.'
-        : null;
     },
     accepts(hit) {
       const piece = model.pieceOf(hit.object);

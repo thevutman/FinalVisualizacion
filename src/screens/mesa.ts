@@ -1,59 +1,61 @@
-import { CLUE_LIST } from '../data/clues';
-import { SCREENS } from '../data/screens';
+import { createButton } from '../components/Button';
+import { neighborsOf, UI_TEXT } from '../data/screens';
 import { TOOL_IDS, TOOLS } from '../data/tools';
-import { h, listen } from '../lib/dom';
+import { h } from '../lib/dom';
 import { icon } from '../lib/icons';
-import { store } from '../state/store';
 import type { ExamView } from './types';
 
-/** Pantalla 02 · Mesa de examen: la linterna completa y la elección de herramienta. */
-export const mesaView: ExamView = {
+/**
+ * Paso 02 · Mesa de examen: la linterna completa (se puede girar) y la leyenda
+ * de las 5 herramientas que vienen, en el orden en que se usan.
+ */
+export const mesaStep: ExamView = {
   screen: 'mesa',
   tool: null,
-  createPanel({ app }) {
-    const cards = TOOL_IDS.map((tool) => {
-      const clue = CLUE_LIST.find((item) => item.herramienta === tool);
-      const status = h('span', { class: 'text-xs text-tinta-suave' });
-      const button = h(
-        'button',
-        {
-          type: 'button',
-          class:
-            'ficha flex min-h-tactil w-full items-start gap-3 p-3 text-left transition-colors hover:bg-papel-oscuro',
-        },
-        [
-          icon(tool, 'mt-0.5 size-5 text-coral-ink'),
-          h('span', { class: 'grid gap-0.5' }, [
-            h('span', { class: 'font-semibold' }, [TOOLS[tool].nombre]),
-            h('span', { class: 'text-sm text-tinta-suave' }, [SCREENS[tool].intro]),
-            status,
+  mount({ app, frame }) {
+    const { previous, next } = neighborsOf('mesa');
+    frame.body.append(
+      h(
+        'ol',
+        { class: 'grid gap-1.5', 'aria-label': 'Las 5 herramientas, en orden' },
+        TOOL_IDS.map((tool, index) =>
+          h('li', { class: 'flex items-center gap-3 rounded-ficha bg-papel-claro px-3 py-1' }, [
+            h(
+              'span',
+              {
+                class:
+                  'grid size-9 shrink-0 place-items-center rounded-full bg-tinta text-papel-claro',
+                'aria-hidden': 'true',
+              },
+              [icon(tool)],
+            ),
+            h('span', { class: 'text-lg leading-tight' }, [
+              h('span', { class: 'font-bold' }, [`${index + 1}. ${TOOLS[tool].nombre}: `]),
+              TOOLS[tool].explicacion.toLowerCase(),
+            ]),
           ]),
-        ],
-      );
-      listen(button, 'click', () => app.go(tool));
-      const update = (): void => {
-        const found = clue ? store.get().found.includes(clue.id) : false;
-        status.textContent = found ? `Pista ${clue?.numero ?? ''} encontrada` : 'Sin examinar';
-        status.classList.toggle('text-ambar-ink', found);
-        status.classList.toggle('font-semibold', found);
-      };
-      update();
-      return { element: h('li', {}, [button]), update };
-    });
-
-    return {
-      element: h('div', { class: 'grid gap-3' }, [
-        h('p', { class: 'etiqueta', id: 'mesa-herramientas' }, ['Herramientas de examen']),
-        h(
-          'ul',
-          {
-            class: 'grid gap-2 sm:grid-cols-2 lg:grid-cols-1',
-            'aria-labelledby': 'mesa-herramientas',
-          },
-          cards.map(({ element }) => element),
         ),
-      ]),
-      onStateChange: () => cards.forEach(({ update }) => update()),
-    };
+      ),
+    );
+    if (previous) {
+      frame.nav.append(
+        createButton({
+          label: UI_TEXT.atras,
+          icon: 'arrowLeft',
+          variant: 'secundario',
+          onClick: () => app.go(previous),
+        }),
+      );
+    }
+    if (next) {
+      frame.nav.append(
+        createButton({
+          label: UI_TEXT.empezar,
+          iconAfter: 'arrowRight',
+          onClick: () => app.go(next),
+        }),
+      );
+    }
+    return { onState: () => undefined, destroy: () => undefined };
   },
 };

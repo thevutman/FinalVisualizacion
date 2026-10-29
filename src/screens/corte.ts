@@ -1,4 +1,4 @@
-import { toolView } from './toolPanel';
+import { toolStep } from './toolStep';
 
-/** Pantalla 05 · Corte: la manija corta el porta pilas; las muescas abren el gráfico de casos. */
-export const corteView = toolView('corte');
+/** Paso 05 · Corte: ver por dentro; pista: 8 muescas, abre el gráfico de casos. */
+export const corteStep = toolStep('corte');

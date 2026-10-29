@@ -62,21 +62,14 @@ export function createTransparencia(context: ToolContext): ExamTool {
       panel.invalidate();
     },
     update: () => false,
-    setValue(value) {
+    setValue(value, seconds) {
       gsap.to(opacity, {
         value,
-        duration: duration(0.2),
+        duration: duration(seconds),
         ease: EASE_OUT,
         overwrite: 'auto',
         onUpdate: apply,
       });
-    },
-    select: () => undefined,
-    blockedHint(piece) {
-      if (opacity.value <= SEE_THROUGH) return null;
-      return piece === 'etiqueta_2019' || piece === 'pilas'
-        ? 'Baja la opacidad de la carcasa: esa pieza está dentro del cuerpo.'
-        : null;
     },
     accepts(hit) {
       const piece = model.pieceOf(hit.object);

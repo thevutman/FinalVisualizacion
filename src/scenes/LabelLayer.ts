@@ -11,7 +11,7 @@ interface Label {
 
 /**
  * Rótulos numerados que siguen a las piezas en pantalla (estilo infografía técnica).
- * Son decorativos (aria-hidden): la lista de botones de piezas da la alternativa accesible.
+ * Son decorativos (aria-hidden): el panel lateral da la alternativa accesible.
  */
 export class LabelLayer {
   private readonly layer: HTMLElement;
@@ -39,7 +39,7 @@ export class LabelLayer {
           'span',
           {
             class:
-              'absolute left-0 top-0 grid size-7 place-items-center rounded-full border-2 border-tinta bg-papel-claro font-mono text-xs font-medium text-tinta shadow-ficha',
+              'absolute left-0 top-0 grid size-9 place-items-center rounded-full border-2 border-tinta bg-papel-claro text-base font-semibold text-tinta shadow-ficha',
           },
           [text],
         );
@@ -54,7 +54,7 @@ export class LabelLayer {
     for (const { piece, element } of this.labels) {
       const { x, y, visible } = this.panel.toScreen(this.model.center(piece, this.point));
       element.hidden = !visible;
-      element.style.transform = `translate(${x.toFixed(1)}px, ${(y - 34).toFixed(1)}px) translate(-50%, -50%)`;
+      element.style.transform = `translate(${x.toFixed(1)}px, ${(y - 40).toFixed(1)}px) translate(-50%, -50%)`;
     }
   }
 

@@ -25,7 +25,7 @@ export const CLUES: Record<ClueId, Clue> = {
     id: 'pelo',
     numero: 1,
     herramienta: 'despiece',
-    piezas: ['portabombilla', 'pelo'],
+    piezas: ['pelo', 'portabombilla'],
     titulo: 'Pelo de zorro',
     resumen: 'Pelo de zorro en el portabombilla',
     detalle:
@@ -68,7 +68,7 @@ export const CLUES: Record<ClueId, Clue> = {
     herramienta: 'acercamiento',
     piezas: ['huellas'],
     titulo: 'Huellas y tierra',
-    resumen: 'Huellas de mano y de pata con tierra del parqueadero',
+    resumen: 'Huellas de mano y de pata, con tierra',
     detalle:
       'Bajo la lupa aparecen huellas de mano y de pata encimadas, con restos de tierra del parqueadero.',
     dato: 'mapaCampus',

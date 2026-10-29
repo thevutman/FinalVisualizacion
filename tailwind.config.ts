@@ -48,17 +48,17 @@ export default {
         sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
         mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
       },
+      // Escala pensada para personas mayores: el texto corrido nunca baja de 18 px.
       fontSize: {
-        etiqueta: ['0.75rem', { lineHeight: '1rem', letterSpacing: '0.08em' }],
-        cuerpo: ['1rem', { lineHeight: '1.6' }],
-        lead: ['1.125rem', { lineHeight: '1.65' }],
-        titulo: ['clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem)', { lineHeight: '1.15' }],
-        portada: ['clamp(2.25rem, 1.4rem + 3.6vw, 4rem)', { lineHeight: '1.02' }],
+        etiqueta: ['1rem', { lineHeight: '1.4' }],
+        boton: ['1.125rem', { lineHeight: '1.3' }],
+        cuerpo: ['clamp(1.125rem, 1rem + 0.35vw, 1.3125rem)', { lineHeight: '1.5' }],
+        titulo: ['clamp(1.75rem, 1.2rem + 1.5vw, 2.75rem)', { lineHeight: '1.1' }],
+        portada: ['clamp(2rem, 1.3rem + 2vw, 3.25rem)', { lineHeight: '1.05' }],
       },
       spacing: {
-        tactil: '2.75rem',
-        escena: 'clamp(20rem, 58vh, 40rem)',
-        'escena-movil': 'clamp(16rem, 45vh, 22rem)',
+        // Área mínima de toque: 56 px.
+        tactil: '3.5rem',
       },
       borderRadius: {
         ficha: '0.375rem',
@@ -76,8 +76,7 @@ export default {
         larga: '700ms',
       },
       zIndex: {
-        libreta: '30',
-        toast: '50',
+        salto: '50',
       },
     },
   },

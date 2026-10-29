@@ -1,4 +1,4 @@
-import { toolView } from './toolPanel';
+import { toolStep } from './toolStep';
 
-/** Pantalla 06 · Transparencia: la opacidad de la carcasa deja ver el interior. */
-export const transparenciaView = toolView('transparencia');
+/** Paso 06 · Transparencia: ver a través; pista: etiqueta 2019. */
+export const transparenciaStep = toolStep('transparencia');

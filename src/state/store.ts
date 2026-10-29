@@ -1,37 +1,31 @@
-import { CLUE_IDS, type ClueId } from '../data/clues';
-import { SCREEN_IDS, type ScreenId } from '../data/screens';
-import { TOOL_IDS, type ToolId } from '../data/tools';
+import { CLUE_IDS, CLUES, type ClueId } from '../data/clues';
+import { SCREEN_IDS, SCREENS, type ScreenId } from '../data/screens';
 import { VERDICT_IDS, type VerdictId } from '../data/verdict';
 
 export interface CaseState {
   screen: ScreenId;
-  activeTool: ToolId | null;
+  /** Índice del paso más avanzado al que llegó el usuario. */
+  reached: number;
   found: readonly ClueId[];
-  connected: readonly ClueId[];
-  caseClosed: boolean;
+  /** Las pistas ya se unieron en el tablero. */
+  joined: boolean;
   verdict: VerdictId | null;
 }
 
 type Listener = (state: CaseState, previous: CaseState) => void;
 
-const STORAGE_KEY = 'zorro-upb:caso-08:v1';
+const STORAGE_KEY = 'zorro-upb:caso-08:v2';
 
 const INITIAL_STATE: CaseState = {
   screen: 'apertura',
-  activeTool: null,
+  reached: 0,
   found: [],
-  connected: [],
-  caseClosed: false,
+  joined: false,
   verdict: null,
 };
 
 function isOneOf<T extends string>(list: readonly T[], value: unknown): value is T {
   return typeof value === 'string' && (list as readonly string[]).includes(value);
-}
-
-function sanitizeList<T extends string>(list: readonly T[], value: unknown): T[] {
-  if (!Array.isArray(value)) return [];
-  return list.filter((item) => value.includes(item));
 }
 
 /** Lee el estado guardado validando cada campo: un localStorage corrupto nunca rompe la app. */
@@ -40,12 +34,16 @@ function readStoredState(): CaseState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return INITIAL_STATE;
     const data = JSON.parse(raw) as Partial<Record<keyof CaseState, unknown>>;
+    const stored: unknown[] = Array.isArray(data.found) ? data.found : [];
+    const found = CLUE_IDS.filter((id) => stored.includes(id));
     return {
       screen: isOneOf(SCREEN_IDS, data.screen) ? data.screen : INITIAL_STATE.screen,
-      activeTool: isOneOf(TOOL_IDS, data.activeTool) ? data.activeTool : null,
-      found: sanitizeList(CLUE_IDS, data.found),
-      connected: sanitizeList(CLUE_IDS, data.connected),
-      caseClosed: data.caseClosed === true,
+      reached:
+        typeof data.reached === 'number'
+          ? Math.min(Math.max(0, data.reached), SCREEN_IDS.length - 1)
+          : 0,
+      found,
+      joined: data.joined === true,
       verdict: isOneOf(VERDICT_IDS, data.verdict) ? data.verdict : null,
     };
   } catch {
@@ -83,7 +81,7 @@ class CaseStore {
 
   setScreen(screen: ScreenId): void {
     if (screen === this.state.screen) return;
-    this.set({ screen, activeTool: isOneOf(TOOL_IDS, screen) ? screen : null });
+    this.set({ screen, reached: Math.max(this.state.reached, SCREEN_IDS.indexOf(screen)) });
   }
 
   /** Devuelve true si la pista es nueva. */
@@ -93,16 +91,8 @@ class CaseStore {
     return true;
   }
 
-  toggleConnection(id: ClueId): void {
-    if (!this.state.found.includes(id)) return;
-    const connected = this.state.connected.includes(id)
-      ? this.state.connected.filter((clue) => clue !== id)
-      : CLUE_IDS.filter((clue) => clue === id || this.state.connected.includes(clue));
-    this.set({ connected });
-  }
-
-  closeCase(): void {
-    this.set({ caseClosed: true });
+  joinClues(): void {
+    this.set({ joined: true });
   }
 
   setVerdict(verdict: VerdictId): void {
@@ -118,10 +108,21 @@ export const store = new CaseStore();
 
 export const TOTAL_CLUES = CLUE_IDS.length;
 
-export function allCluesFound(state: CaseState): boolean {
-  return state.found.length === TOTAL_CLUES;
+/** ¿Ya se cumplió lo que pide el paso para poder seguir? */
+export function isStepComplete(id: ScreenId, state: CaseState): boolean {
+  const tool = SCREENS[id].herramienta;
+  if (tool) {
+    const clue = CLUE_IDS.map((clueId) => CLUES[clueId]).find((item) => item.herramienta === tool);
+    return clue ? state.found.includes(clue.id) : true;
+  }
+  if (id === 'tablero') return state.joined;
+  return true;
 }
 
-export function allCluesConnected(state: CaseState): boolean {
-  return state.connected.length === TOTAL_CLUES;
+/** Se puede ir a un paso ya visitado, o al siguiente si el actual está completo. */
+export function canEnter(id: ScreenId, state: CaseState): boolean {
+  const index = SCREEN_IDS.indexOf(id);
+  if (index <= state.reached) return true;
+  const last = SCREEN_IDS[state.reached];
+  return index === state.reached + 1 && last !== undefined && isStepComplete(last, state);
 }

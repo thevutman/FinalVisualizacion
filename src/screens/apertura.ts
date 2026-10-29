@@ -1,142 +1,126 @@
 import gsap from 'gsap';
-import { PHASES, SCREENS, UI_TEXT } from '../data/screens';
+import { createButton } from '../components/Button';
+import { createStepFrame } from '../components/StepFrame';
+import { eyebrowFor, neighborsOf, SCREEN_IDS, SCREENS, UI_TEXT } from '../data/screens';
 import { STORY } from '../data/story';
-import { h, listen } from '../lib/dom';
-import { icon } from '../lib/icons';
+import { h } from '../lib/dom';
+import { icon, type IconName } from '../lib/icons';
 import { duration, EASE_OUT } from '../lib/motion';
 import { store } from '../state/store';
 import type { ScreenFactory } from './types';
 
-/** Pantalla 01 · Apertura del caso: el rol de investigador y la evidencia A. */
+/** Los 3 momentos del recorrido, como infografía de entrada. */
+const HOW_IT_WORKS: readonly { icon: IconName; titulo: string; texto: string }[] = [
+  { icon: 'acercamiento', titulo: 'Examina', texto: 'la linterna con 5 herramientas' },
+  { icon: 'libreta', titulo: 'Reúne', texto: 'las 5 pistas en tu libreta' },
+  { icon: 'veredicto', titulo: 'Decide', texto: 'si el zorro existe' },
+];
+
+/** Paso 01 · Apertura del caso: el rol de investigador y la evidencia A. */
 export const createApertura: ScreenFactory = (app) => {
   const screen = SCREENS.apertura;
-  const inProgress = store.get().found.length > 0;
+  const { next } = neighborsOf('apertura');
+  const frame = createStepFrame('text-portada');
+  frame.eyebrow.textContent = eyebrowFor('apertura');
+  frame.title.textContent = screen.titulo;
+  frame.text.textContent = screen.texto;
 
-  const notes = h(
-    'ul',
-    {
-      class: 'halo-mascara pointer-events-none absolute inset-0 select-none',
-      'aria-label': 'Notas escondidas en el expediente',
-    },
-    STORY.notasOcultas.map((note, index) =>
+  const steps = HOW_IT_WORKS.map((step, index) =>
+    h('li', { class: 'flex flex-1 flex-col items-center gap-2 text-center' }, [
       h(
-        'li',
-        {
-          class: `absolute max-w-[12rem] -rotate-3 font-mono text-sm text-coral-ink ${['left-[8%] top-[18%]', 'right-[8%] top-[30%]', 'bottom-[14%] left-[38%]'][index % 3] ?? ''}`,
-        },
-        [note],
-      ),
-    ),
-  );
-  const lightToggle = h(
-    'button',
-    { type: 'button', class: 'btn-secundario', 'aria-pressed': 'false' },
-    [icon('acercamiento', 'size-4'), 'Encender la linterna'],
-  );
-
-  const folder = h(
-    'div',
-    {
-      class:
-        'relative min-h-72 overflow-hidden rounded-ficha border border-linea-fuerte bg-papel-oscuro p-6 shadow-ficha sm:p-10',
-    },
-    [
-      h('div', { class: 'halo-luz pointer-events-none absolute inset-0', 'aria-hidden': 'true' }),
-      notes,
-      h('div', { class: 'relative max-w-xs rounded-ficha bg-papel-claro p-6 shadow-ficha' }, [
-        h('p', { class: 'etiqueta' }, ['Expediente']),
-        h('p', { class: 'font-display text-portada font-extrabold leading-none' }, [STORY.caso]),
-        h('p', { class: 'sello mt-4 text-coral-ink' }, ['Abierto']),
-      ]),
-    ],
-  );
-
-  const moveHalo = (event: PointerEvent): void => {
-    const rect = folder.getBoundingClientRect();
-    folder.style.setProperty('--halo-x', `${event.clientX - rect.left}px`);
-    folder.style.setProperty('--halo-y', `${event.clientY - rect.top}px`);
-  };
-
-  const summary = STORY.resumenCaso
-    ? h('p', { class: 'text-lead' }, [STORY.resumenCaso])
-    : h(
-        'p',
+        'span',
         {
           class:
-            'rounded-ficha border-2 border-dashed border-linea-fuerte p-4 text-sm text-tinta-suave',
+            'grid size-16 place-items-center rounded-full bg-tinta text-papel-claro lg:size-20',
+          'aria-hidden': 'true',
         },
-        [
-          'Resumen del Caso 08 pendiente: pega en ',
-          h('code', { class: 'font-mono' }, ['src/data/story.ts']),
-          ' el resumen tomado del cuento (quién desapareció, dónde y cuándo).',
-        ],
-      );
-
-  const open = h('button', { type: 'button', class: 'btn-primario px-6' }, [
-    inProgress ? 'Continuar el examen' : UI_TEXT.abrirEvidencia,
-    icon('arrowRight', 'size-4'),
-  ]);
-
-  const evidence = h(
-    'section',
-    {
-      'aria-labelledby': 'evidencia-titulo',
-      class: 'ficha grid gap-5 p-5 sm:grid-cols-[1fr_auto] sm:items-center sm:p-6',
-    },
-    [
-      h('div', {}, [
-        h('p', { class: 'etiqueta' }, [STORY.evidencia.codigo]),
-        h('h2', { id: 'evidencia-titulo', class: 'text-2xl' }, [STORY.evidencia.nombre]),
-        h('p', { class: 'mt-1 text-cuerpo text-tinta-suave' }, [STORY.evidencia.descripcion]),
-        h('div', { class: 'mt-4 flex flex-wrap gap-3' }, [open]),
-      ]),
-      h('img', {
-        src: `${import.meta.env.BASE_URL}img/linterna.svg`,
-        alt: '',
-        width: 640,
-        height: 260,
-        class: 'h-auto w-full max-w-xs justify-self-center',
-      }),
-    ],
+        [icon(step.icon, 'size-8 lg:size-10')],
+      ),
+      h('span', { class: 'text-xl font-bold' }, [`${index + 1}. ${step.titulo}`]),
+      h('span', { class: 'text-lg leading-tight text-tinta' }, [step.texto]),
+    ]),
   );
 
-  const sections = [
-    h('header', { class: 'space-y-2' }, [
-      h('p', { class: 'etiqueta' }, [`Pantalla ${screen.numero} · ${PHASES[screen.fase]}`]),
-      h('h1', { class: 'text-portada', tabindex: '-1' }, [STORY.rol]),
-      h('p', { class: 'max-w-2xl text-lead text-tinta-suave' }, [screen.intro]),
-    ]),
-    h('div', { class: 'space-y-3' }, [
-      folder,
-      h('div', { class: 'flex flex-wrap items-center justify-between gap-3' }, [
-        h('p', { class: 'text-sm text-tinta-suave' }, [
-          'Pasa el cursor por el expediente: la linterna revela notas escondidas.',
+  frame.visual.append(
+    h('div', { class: 'flex size-full flex-col justify-center gap-6 p-6 lg:gap-10 lg:p-10' }, [
+      h('div', { class: 'flex flex-wrap items-center justify-center gap-6' }, [
+        h('div', { class: 'rotate-[-2deg] rounded-ficha bg-papel-claro p-5 shadow-ficha' }, [
+          h('p', { class: 'etiqueta' }, ['Expediente']),
+          h('p', { class: 'font-display text-5xl font-extrabold leading-none' }, [STORY.caso]),
+          h('p', { class: 'sello mt-3 text-coral-ink' }, ['Abierto']),
         ]),
-        lightToggle,
+        h('img', {
+          src: `${import.meta.env.BASE_URL}img/linterna.svg`,
+          alt: 'Dibujo de la evidencia A: la linterna.',
+          width: 640,
+          height: 260,
+          class: 'h-auto w-full max-w-sm',
+        }),
+      ]),
+      h('section', { 'aria-labelledby': 'como-funciona' }, [
+        h('h2', { id: 'como-funciona', class: 'mb-4 text-center text-2xl' }, ['Cómo funciona']),
+        h('ol', { class: 'flex items-start gap-4' }, steps),
       ]),
     ]),
-    h('div', { class: 'max-w-3xl space-y-4' }, [
-      h('p', { class: 'text-lead' }, [STORY.contexto]),
-      summary,
-    ]),
-    evidence,
-  ];
-  const element = h('div', { class: 'space-y-8' }, sections);
+  );
 
-  const cleanups = [
-    listen(folder, 'pointermove', moveHalo),
-    listen(open, 'click', () => app.go('mesa')),
-    listen(lightToggle, 'click', () => {
-      const on = notes.classList.toggle('halo-mascara');
-      lightToggle.setAttribute('aria-pressed', String(!on));
-    }),
-  ];
+  frame.body.append(
+    h('p', { class: 'text-cuerpo text-tinta' }, [STORY.contexto]),
+    h(
+      'div',
+      { class: 'flex items-center gap-3 rounded-ficha border-2 border-tinta bg-papel-claro p-3' },
+      [
+        icon('linterna', 'size-8 text-coral-ink'),
+        h('p', { class: 'text-lg leading-snug' }, [
+          h('span', { class: 'font-bold' }, [`${STORY.evidencia.codigo}: `]),
+          STORY.evidencia.descripcion,
+        ]),
+      ],
+    ),
+  );
 
-  // La ficha se despliega por partes al abrir el caso.
-  gsap.from(sections, { opacity: 0, y: 16, duration: duration(0.6), ease: EASE_OUT, stagger: 0.1 });
-
-  return {
-    element,
-    destroy: () => cleanups.forEach((cleanup) => cleanup()),
+  // Si ya hay avance guardado: seguir donde iba, o empezar de nuevo.
+  const renderNav = (): void => {
+    const reached = SCREEN_IDS[store.get().reached];
+    const inProgress = reached !== undefined && reached !== 'apertura';
+    frame.nav.replaceChildren();
+    if (inProgress) {
+      frame.nav.append(
+        createButton({
+          label: UI_TEXT.reiniciar,
+          icon: 'reset',
+          variant: 'secundario',
+          onClick: () => {
+            store.reset();
+            renderNav();
+          },
+        }),
+        createButton({
+          label: UI_TEXT.continuar,
+          iconAfter: 'arrowRight',
+          onClick: () => app.go(reached),
+        }),
+      );
+    } else if (next) {
+      frame.nav.append(
+        createButton({
+          label: UI_TEXT.abrirExpediente,
+          iconAfter: 'arrowRight',
+          onClick: () => app.go(next),
+        }),
+      );
+    }
   };
+  renderNav();
+
+  gsap.from(steps, {
+    opacity: 0,
+    y: 12,
+    duration: duration(0.6),
+    ease: EASE_OUT,
+    stagger: 0.15,
+    delay: 0.2,
+  });
+
+  return { element: frame.element, destroy: () => undefined };
 };

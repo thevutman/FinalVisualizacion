@@ -1,29 +1,32 @@
 /**
- * Gráficos externos de Flourish. Pega aquí la URL de embed de cada visualización
- * (formato https://flo.uri.sh/visualisation/XXXXXXX/embed). Si la URL está vacía,
- * el panel muestra un aviso en lugar del iframe.
+ * Gráficos de Flourish. Pega la URL de embed de cada visualización
+ * (https://flo.uri.sh/visualisation/XXXXXXX/embed). Mientras la URL esté vacía,
+ * su lugar en pantalla muestra un recuadro que indica qué gráfico va ahí.
  */
 export type ChartId = 'casosPorAnio' | 'mapaCampus';
 
 export interface ChartInfo {
   titulo: string;
-  descripcion: string;
+  /** Nombre corto para los botones. */
+  etiqueta: string;
+  /** Frase que une el gráfico con la pista que lo abre. */
+  conexion: string;
   embedUrl: string;
-  /** Alto del iframe en píxeles en pantallas medianas y grandes. */
-  alto: number;
 }
 
 export const CHARTS: Record<ChartId, ChartInfo> = {
   casosPorAnio: {
-    titulo: 'Casos por año (2019 a 2025)',
-    descripcion: 'Cada muesca del porta pilas corresponde a uno de estos casos.',
+    titulo: 'Casos por año, 2019 a 2025',
+    etiqueta: 'Casos por año',
+    conexion: 'Cada muesca de la linterna es un caso: 8 en total.',
     embedUrl: '',
-    alto: 520,
   },
   mapaCampus: {
     titulo: 'Mapa del campus con los 8 casos',
-    descripcion: 'La tierra de las huellas viene del parqueadero. Ubica los casos en el campus.',
+    etiqueta: 'Mapa del campus',
+    conexion: 'La tierra de las huellas viene del parqueadero.',
     embedUrl: '',
-    alto: 600,
   },
 };
+
+export const CHART_IDS = Object.keys(CHARTS) as ChartId[];

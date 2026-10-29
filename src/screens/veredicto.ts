@@ -1,62 +1,109 @@
-import { createVeredicto } from '../components/Veredicto';
-import { PHASES, SCREENS, UI_TEXT } from '../data/screens';
+import gsap from 'gsap';
+import { createButton } from '../components/Button';
+import { createStepFrame } from '../components/StepFrame';
+import { createVerdictResults } from '../components/VerdictResults';
+import { CLUE_LIST } from '../data/clues';
+import { eyebrowFor, neighborsOf, SCREENS, UI_TEXT } from '../data/screens';
 import { STORY } from '../data/story';
-import { VERDICT } from '../data/verdict';
+import { VERDICT, type VerdictId } from '../data/verdict';
 import { h, listen } from '../lib/dom';
 import { icon } from '../lib/icons';
+import { duration, EASE_OUT } from '../lib/motion';
 import { store } from '../state/store';
 import type { ScreenFactory } from './types';
 
-/** Pantalla 09 · Veredicto: la cita final del cuento, el sello y la decisión del investigador. */
+/** Paso 09 · Veredicto: la cita final, el sello del caso y la decisión del investigador. */
 export const createVeredictoScreen: ScreenFactory = (app) => {
   const screen = SCREENS.veredicto;
-  const verdict = createVeredicto({ onChoose: (id) => store.setVerdict(id) });
+  const { previous } = neighborsOf('veredicto');
+  const frame = createStepFrame();
+  frame.eyebrow.textContent = eyebrowFor('veredicto');
+  frame.title.textContent = screen.titulo;
+  frame.text.textContent = VERDICT.pregunta;
 
-  const quote = STORY.citaFinal.texto
-    ? h('blockquote', { class: 'mx-auto max-w-2xl text-center' }, [
-        h('p', { class: 'font-display text-2xl font-extrabold leading-snug sm:text-3xl' }, [
-          `“${STORY.citaFinal.texto}”`,
+  // Antes de votar: el sello del caso, la cita del cuento y las 5 pistas reunidas.
+  const cover = h(
+    'div',
+    { class: 'absolute inset-0 flex flex-col items-center justify-center gap-6 p-6 text-center' },
+    [
+      STORY.citaFinal.texto &&
+        h('blockquote', { class: 'max-w-xl' }, [
+          h('p', { class: 'font-display text-3xl font-extrabold leading-snug' }, [
+            `“${STORY.citaFinal.texto}”`,
+          ]),
+          h('footer', { class: 'mt-2 text-lg' }, [`— ${STORY.citaFinal.fuente}`]),
         ]),
-        h('footer', { class: 'mt-3 text-sm text-tinta-suave' }, [`— ${STORY.citaFinal.fuente}`]),
-      ])
-    : h(
-        'p',
-        {
-          class:
-            'mx-auto max-w-2xl rounded-ficha border-2 border-dashed border-linea-fuerte p-4 text-center text-sm text-tinta-suave',
-        },
-        [
-          'Cita final del cuento pendiente: pégala tal cual en ',
-          h('code', { class: 'font-mono' }, ['src/data/story.ts']),
-          ' (citaFinal.texto).',
-        ],
-      );
+      h('p', { class: 'sello -rotate-2 px-6 py-3 text-2xl text-coral-ink' }, [VERDICT.sello]),
+      h(
+        'ul',
+        { class: 'flex flex-wrap justify-center gap-3', 'aria-label': 'Las 5 pistas reunidas' },
+        CLUE_LIST.map((clue) =>
+          h(
+            'li',
+            {
+              class:
+                'flex items-center gap-2 rounded-full bg-ambar-claro px-3 py-1.5 text-lg font-semibold',
+            },
+            [icon(clue.id), clue.titulo],
+          ),
+        ),
+      ),
+    ],
+  );
+  const results = createVerdictResults();
+  const resultsLayer = h('div', { class: 'absolute inset-0', hidden: true }, [results.element]);
+  frame.visual.append(cover, resultsLayer);
 
-  const share = h('button', { type: 'button', class: 'btn-primario px-6' }, [
-    icon('share', 'size-4'),
-    VERDICT.compartir.boton,
-  ]);
-  const back = h('button', { type: 'button', class: 'btn-secundario' }, [
-    icon('arrowLeft', 'size-4'),
-    'Volver al tablero',
-  ]);
-  const reset = h('button', { type: 'button', class: 'btn-secundario' }, [
-    icon('reset', 'size-4'),
-    UI_TEXT.reiniciar,
-  ]);
+  const options = VERDICT.opciones.map((option) => {
+    const button = h(
+      'button',
+      {
+        type: 'button',
+        'aria-pressed': 'false',
+        class:
+          'btn w-full justify-start border-2 border-tinta bg-papel-claro text-xl text-tinta hover:bg-papel-oscuro aria-pressed:bg-coral-ink aria-pressed:text-papel-claro aria-pressed:border-coral-ink',
+      },
+      [icon(option.id, 'size-7'), option.etiqueta],
+    );
+    listen(button, 'click', () => store.setVerdict(option.id));
+    return { option, button };
+  });
 
-  const element = h('div', { class: 'space-y-10' }, [
-    h('header', { class: 'space-y-1 text-center' }, [
-      h('p', { class: 'etiqueta' }, [`Pantalla ${screen.numero} · ${PHASES[screen.fase]}`]),
-      h('h1', { class: 'text-titulo', tabindex: '-1' }, [screen.titulo]),
-    ]),
-    quote,
-    h('p', { class: 'text-center' }, [
-      h('span', { class: 'sello -rotate-2 px-5 py-2 text-base text-coral-ink' }, [VERDICT.sello]),
-    ]),
-    verdict.element,
-    h('div', { class: 'flex flex-wrap justify-center gap-3' }, [share, back, reset]),
-  ]);
+  const share = createButton({
+    label: VERDICT.compartir.boton,
+    icon: 'share',
+    variant: 'secundario',
+    onClick: () => void shareCase(),
+  });
+  const restart = createButton({
+    label: UI_TEXT.reiniciar,
+    icon: 'reset',
+    variant: 'secundario',
+    onClick: () => {
+      store.reset();
+      app.go('apertura');
+    },
+  });
+  const after = h('div', { class: 'flex flex-wrap gap-2', hidden: true }, [share, restart]);
+
+  frame.body.append(
+    h(
+      'div',
+      { role: 'group', 'aria-label': VERDICT.pregunta, class: 'grid gap-2' },
+      options.map(({ button }) => button),
+    ),
+    after,
+  );
+  if (previous) {
+    frame.nav.append(
+      createButton({
+        label: UI_TEXT.atras,
+        icon: 'arrowLeft',
+        variant: 'secundario',
+        onClick: () => app.go(previous),
+      }),
+    );
+  }
 
   const shareCase = async (): Promise<void> => {
     const url = `${location.origin}${location.pathname}`;
@@ -68,27 +115,34 @@ export const createVeredictoScreen: ScreenFactory = (app) => {
       }
       await navigator.clipboard.writeText(url);
       app.announce(copiado);
+      share.lastChild?.replaceWith(copiado);
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return;
       app.announce(`Copia este enlace: ${url}`);
     }
   };
 
-  const cleanups = [
-    store.subscribe((state) => verdict.update(state)),
-    listen(share, 'click', () => void shareCase()),
-    listen(back, 'click', () => app.go('tablero')),
-    listen(reset, 'click', () => {
-      if (!window.confirm('¿Reiniciar el caso? Se borrarán las pistas y el veredicto guardados.'))
-        return;
-      store.reset();
-      app.go('apertura');
-    }),
-  ];
-  verdict.update(store.get());
-
-  return {
-    element,
-    destroy: () => cleanups.forEach((cleanup) => cleanup()),
+  let shown: VerdictId | null = null;
+  const update = (): void => {
+    const { verdict } = store.get();
+    options.forEach(({ option, button }) =>
+      button.setAttribute('aria-pressed', String(option.id === verdict)),
+    );
+    if (!verdict || verdict === shown) return;
+    shown = verdict;
+    cover.hidden = true;
+    resultsLayer.hidden = false;
+    after.hidden = false;
+    results.show(verdict);
+    gsap.fromTo(
+      resultsLayer,
+      { opacity: 0 },
+      { opacity: 1, duration: duration(0.5), ease: EASE_OUT },
+    );
   };
+
+  const unsubscribe = store.subscribe(update);
+  update();
+
+  return { element: frame.element, destroy: unsubscribe };
 };

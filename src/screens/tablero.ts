@@ -1,68 +1,109 @@
-import { createTableroPistas } from '../components/TableroPistas';
-import { PHASES, SCREENS, UI_TEXT } from '../data/screens';
-import { h, listen } from '../lib/dom';
-import { icon } from '../lib/icons';
-import { allCluesConnected, store } from '../state/store';
+import gsap from 'gsap';
+import { createBoard } from '../components/Board';
+import { createButton } from '../components/Button';
+import { createChartFrame } from '../components/ChartFrame';
+import { createStepFrame } from '../components/StepFrame';
+import { createViewSwitch } from '../components/ViewSwitch';
+import { CHART_IDS, CHARTS, type ChartId } from '../data/charts';
+import { eyebrowFor, neighborsOf, SCREENS, UI_TEXT } from '../data/screens';
+import { h } from '../lib/dom';
+import { duration, EASE_OUT } from '../lib/motion';
+import { store } from '../state/store';
 import type { ScreenFactory } from './types';
 
-/** Pantalla 08 · Tablero de pistas: conectar las 5 pistas con el Caso 08 y abrir los datos. */
+type BoardVisual = 'tablero' | ChartId;
+
+/**
+ * Paso 08 · Tablero de pistas: un botón une las 5 pistas con el Caso 08 y
+ * después se pueden ver los dos gráficos del caso en grande.
+ */
 export const createTablero: ScreenFactory = (app) => {
   const screen = SCREENS.tablero;
-  const board = createTableroPistas({
-    onToggle: (id) => store.toggleConnection(id),
-    onOpenChart: app.openChart,
+  const { previous, next } = neighborsOf('tablero');
+  const frame = createStepFrame();
+  frame.eyebrow.textContent = eyebrowFor('tablero');
+  frame.title.textContent = screen.titulo;
+  frame.text.textContent = screen.texto;
+
+  const board = createBoard();
+  const boardLayer = h('div', { class: 'absolute inset-0' }, [board.element]);
+  const charts = CHART_IDS.map((id) => {
+    const chart = createChartFrame(id);
+    return {
+      id,
+      chart,
+      layer: h('div', { class: 'absolute inset-0', hidden: true }, [chart.element]),
+    };
   });
-  const close = h('button', { type: 'button', class: 'btn-primario px-6' }, [
-    UI_TEXT.cerrarCaso,
-    icon('arrowRight', 'size-4'),
-  ]);
-  const back = h('button', { type: 'button', class: 'btn-secundario' }, [
-    icon('arrowLeft', 'size-4'),
-    UI_TEXT.volverMesa,
-  ]);
+  frame.visual.append(boardLayer, ...charts.map(({ layer }) => layer));
 
-  const element = h('div', { class: 'space-y-6' }, [
-    h('header', { class: 'flex flex-wrap items-end justify-between gap-4' }, [
-      h('div', { class: 'space-y-1' }, [
-        h('p', { class: 'etiqueta' }, [`Pantalla ${screen.numero} · ${PHASES[screen.fase]}`]),
-        h('h1', { class: 'text-titulo', tabindex: '-1' }, [screen.titulo]),
-        h('p', { class: 'max-w-2xl text-cuerpo text-tinta-suave' }, [screen.intro]),
-        h('p', { class: 'text-sm text-tinta-suave' }, [screen.ayuda ?? '']),
-      ]),
-      h('div', { class: 'flex flex-wrap gap-3' }, [back, close]),
-    ]),
-    board.element,
-  ]);
-
-  const update = (): void => {
-    const state = store.get();
-    board.update(state);
-    close.disabled = !allCluesConnected(state);
-    close.setAttribute('aria-describedby', 'tablero-requisito');
+  const showVisual = (visual: BoardVisual): void => {
+    boardLayer.hidden = visual !== 'tablero';
+    for (const { id, chart, layer } of charts) {
+      layer.hidden = id !== visual;
+      if (id === visual) chart.load();
+    }
+    const shown = visual === 'tablero' ? boardLayer : charts.find(({ id }) => id === visual)?.layer;
+    if (shown)
+      gsap.fromTo(shown, { opacity: 0 }, { opacity: 1, duration: duration(0.5), ease: EASE_OUT });
   };
-  element.append(
-    h('p', { id: 'tablero-requisito', class: 'sr-only' }, [
-      'Se habilita cuando las 5 pistas están conectadas.',
-    ]),
-  );
 
-  const cleanups = [
-    store.subscribe(update),
-    listen(close, 'click', () => {
-      store.closeCase();
-      app.go('veredicto');
-    }),
-    listen(back, 'click', () => app.go('mesa')),
-  ];
-  update();
-  // Los hilos se vuelven a trazar cuando el tablero ya tiene medidas en el documento.
-  requestAnimationFrame(update);
+  const back = previous
+    ? createButton({
+        label: UI_TEXT.atras,
+        icon: 'arrowLeft',
+        variant: 'secundario',
+        onClick: () => app.go(previous),
+      })
+    : null;
 
-  return {
-    element,
-    destroy() {
-      cleanups.forEach((cleanup) => cleanup());
-      board.destroy();
-    },
+  const renderJoined = (animate: boolean): void => {
+    board.join(animate);
+    const views = createViewSwitch<BoardVisual>(
+      'Qué ver',
+      [
+        { id: 'tablero', label: 'Tablero', icon: 'tablero' },
+        ...CHART_IDS.map((id) => ({
+          id,
+          label: CHARTS[id].etiqueta,
+          icon: id === 'mapaCampus' ? ('map' as const) : ('chart' as const),
+        })),
+      ],
+      showVisual,
+    );
+    views.set('tablero');
+    frame.body.replaceChildren(
+      h('p', { class: 'text-xl font-semibold' }, [UI_TEXT.pistasUnidas]),
+      views.element,
+    );
+    frame.nav.replaceChildren(...(back ? [back] : []));
+    if (next) {
+      const close = createButton({
+        label: UI_TEXT.cerrarCaso,
+        iconAfter: 'arrowRight',
+        onClick: () => app.go(next),
+      });
+      frame.nav.append(close);
+      if (animate) close.focus({ preventScroll: true });
+    }
   };
+
+  if (store.get().joined) {
+    renderJoined(false);
+  } else {
+    const join = createButton({
+      label: UI_TEXT.unirPistas,
+      icon: 'tablero',
+      onClick: () => {
+        store.joinClues();
+        renderJoined(true);
+        app.announce(UI_TEXT.pistasUnidas);
+      },
+    });
+    join.classList.add('w-full', 'text-xl');
+    frame.body.append(join);
+    frame.nav.append(...(back ? [back] : []));
+  }
+
+  return { element: frame.element, destroy: () => undefined };
 };

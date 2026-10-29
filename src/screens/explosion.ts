@@ -1,7 +1,4 @@
-import { EXPLOSION_ORDER } from '../data/pieces';
-import { toolView } from './toolPanel';
+import { toolStep } from './toolStep';
 
-/** Pantalla 04 · Explosión: el mecanismo del interruptor se abre con un slider. */
-export const explosionView = toolView('explosion', {
-  numbers: Object.fromEntries(EXPLOSION_ORDER.map((piece, index) => [piece, index + 1])),
-});
+/** Paso 04 · Explosión: abrir el interruptor; pista: resorte doblado. */
+export const explosionStep = toolStep('explosion');

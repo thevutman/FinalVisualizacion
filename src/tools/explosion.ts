@@ -11,18 +11,7 @@ const DIRECTIONS: Partial<Record<PieceName, Vector3>> = {
   base_interruptor: new Vector3(0.36, 0.18, -0.1),
 };
 
-const RESORTE_VISIBLE_FROM = 0.4;
-
 export function createExplosion(context: ToolContext): ExamTool {
-  let amount = 0;
-
-  const apply = (seconds: number): void => {
-    for (const piece of EXPLOSION_ORDER) {
-      const direction = DIRECTIONS[piece];
-      if (direction) movePiece(context, piece, direction.clone().multiplyScalar(amount), seconds);
-    }
-  };
-
   return {
     id: 'explosion',
     activate() {
@@ -37,21 +26,15 @@ export function createExplosion(context: ToolContext): ExamTool {
       );
     },
     deactivate() {
-      amount = 0;
       context.labels.clear();
       restorePieces(context, EXPLOSION_ORDER);
     },
     update: () => false,
-    setValue(value) {
-      amount = value;
-      apply(0.25);
-    },
-    select: () => undefined,
-    blockedHint(piece) {
-      if (piece === 'resorte' && amount < RESORTE_VISIBLE_FROM) {
-        return 'Abre más la explosión: el resorte está escondido debajo del botón.';
+    setValue(value, seconds) {
+      for (const piece of EXPLOSION_ORDER) {
+        const direction = DIRECTIONS[piece];
+        if (direction) movePiece(context, piece, direction.clone().multiplyScalar(value), seconds);
       }
-      return null;
     },
     accepts: () => true,
   };

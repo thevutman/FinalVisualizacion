@@ -1,4 +1,4 @@
-import { toolView } from './toolPanel';
+import { toolStep } from './toolStep';
 
-/** Pantalla 07 · Acercamiento: una lupa sobre la carcasa; las huellas abren el mapa del campus. */
-export const acercamientoView = toolView('acercamiento');
+/** Paso 07 · Acercamiento: lupa; pista: huellas, abre el mapa del campus. */
+export const acercamientoStep = toolStep('acercamiento');
