@@ -27,9 +27,9 @@ export const CLUES: Record<ClueId, Clue> = {
     herramienta: 'despiece',
     piezas: ['pelo', 'portabombilla'],
     titulo: 'Pelo de zorro',
-    resumen: 'Pelo de zorro en el portabombilla',
+    resumen: 'Pelo de zorro donde va el bombillo',
     detalle:
-      'Al retirar la bombilla aparece un pelo rojizo atrapado en el portabombilla. No es de una persona: es pelo de zorro.',
+      'Al sacar el bombillo aparece un pelo rojizo atrapado. No es de una persona: es pelo de zorro.',
   },
   resorte: {
     id: 'resorte',
@@ -37,19 +37,18 @@ export const CLUES: Record<ClueId, Clue> = {
     herramienta: 'explosion',
     piezas: ['resorte'],
     titulo: 'Resorte doblado',
-    resumen: 'Resorte del interruptor doblado',
-    detalle:
-      'El resorte del interruptor está doblado, como si alguien hubiera forzado el botón para mantener la linterna encendida.',
+    resumen: 'El resorte del botón está doblado',
+    detalle: 'Alguien forzó el botón para dejar la linterna prendida, y el resorte quedó doblado.',
   },
   muescas: {
     id: 'muescas',
     numero: 3,
     herramienta: 'corte',
     piezas: ['muescas'],
-    titulo: '8 muescas',
-    resumen: '8 muescas, una por caso',
+    titulo: '8 rayas',
+    resumen: '8 rayas, una por caso',
     detalle:
-      'Rayadas en la pared interior del porta pilas hay 8 muescas. Hay una por cada caso registrado en el campus.',
+      'Por dentro, donde van las pilas, hay 8 rayas hechas a mano. Hay una por cada caso del campus.',
     dato: 'casosPorAnio',
   },
   etiqueta: {
@@ -58,9 +57,9 @@ export const CLUES: Record<ClueId, Clue> = {
     herramienta: 'transparencia',
     piezas: ['etiqueta_2019'],
     titulo: 'Fecha 2019',
-    resumen: 'Etiqueta con la fecha 2019',
+    resumen: 'Un papel con la fecha 2019',
     detalle:
-      'Dentro del cuerpo hay una etiqueta doblada con una fecha: 2019, el año del primer caso.',
+      'Dentro de la linterna hay un papel doblado con una fecha: 2019, el año del primer caso.',
   },
   huellas: {
     id: 'huellas',
@@ -70,7 +69,7 @@ export const CLUES: Record<ClueId, Clue> = {
     titulo: 'Huellas y tierra',
     resumen: 'Huellas de mano y de pata, con tierra',
     detalle:
-      'Bajo la lupa aparecen huellas de mano y de pata encimadas, con restos de tierra del parqueadero.',
+      'Con la lupa aparecen huellas de mano y de pata, una encima de otra, con tierra del parqueadero.',
     dato: 'mapaCampus',
   },
 };

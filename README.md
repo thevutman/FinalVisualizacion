@@ -21,17 +21,19 @@ npm run format     # Prettier
 
 ## Flujo (9 pantallas, 3 fases)
 
-| Fase           | Pantalla                                        | Archivo                                                       |
-| -------------- | ----------------------------------------------- | ------------------------------------------------------------- |
-| 1 · Apertura   | 01 Apertura del caso                            | `src/screens/apertura.ts`                                     |
-| 2 · Examen     | 02 Mesa de examen                               | `src/screens/mesa.ts`                                         |
-|                | 03 Despiece: pelo de zorro en el portabombilla  | `src/screens/despiece.ts` + `src/tools/despiece.ts`           |
-|                | 04 Explosión: resorte del interruptor doblado   | `src/screens/explosion.ts` + `src/tools/explosion.ts`         |
-|                | 05 Corte: 8 muescas, abre el gráfico de casos   | `src/screens/corte.ts` + `src/tools/corte.ts`                 |
-|                | 06 Transparencia: etiqueta con la fecha 2019    | `src/screens/transparencia.ts` + `src/tools/transparencia.ts` |
-|                | 07 Acercamiento: huellas y tierra, abre el mapa | `src/screens/acercamiento.ts` + `src/tools/acercamiento.ts`   |
-| 3 · Resolución | 08 Tablero de pistas                            | `src/screens/tablero.ts`                                      |
-|                | 09 Veredicto: Caso 08                           | `src/screens/veredicto.ts`                                    |
+| Fase           | Pantalla                                         | Archivo                                                       |
+| -------------- | ------------------------------------------------ | ------------------------------------------------------------- |
+| 1 · Apertura   | 01 Apertura del caso                             | `src/screens/apertura.ts`                                     |
+| 2 · Examen     | 02 La prueba: una linterna (mesa de examen)      | `src/screens/mesa.ts`                                         |
+|                | 03 Separar las piezas (despiece): pelo de zorro  | `src/screens/despiece.ts` + `src/tools/despiece.ts`           |
+|                | 04 Abrir el botón (explosión): resorte doblado   | `src/screens/explosion.ts` + `src/tools/explosion.ts`         |
+|                | 05 Mirar por dentro (corte): 8 rayas + gráfico   | `src/screens/corte.ts` + `src/tools/corte.ts`                 |
+|                | 06 Ver a través (transparencia): fecha 2019      | `src/screens/transparencia.ts` + `src/tools/transparencia.ts` |
+|                | 07 Mirar con lupa (acercamiento): huellas + mapa | `src/screens/acercamiento.ts` + `src/tools/acercamiento.ts`   |
+| 3 · Resolución | 08 Unir las pistas (tablero)                     | `src/screens/tablero.ts`                                      |
+|                | 09 Veredicto: Caso 08                            | `src/screens/veredicto.ts`                                    |
+
+En pantalla no se usan términos técnicos: cada herramienta se nombra con lo que hace ("Separar las piezas", "Mirar por dentro"…), definido en `src/data/tools.ts`. Entre paréntesis queda el nombre interno del código.
 
 Cada paso de herramienta (03 a 07) sigue la misma secuencia, definida en `src/screens/toolStep.ts`:
 

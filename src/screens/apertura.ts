@@ -11,7 +11,7 @@ import type { ScreenFactory } from './types';
 
 /** Los 3 momentos del recorrido, como infografía de entrada. */
 const HOW_IT_WORKS: readonly { icon: IconName; titulo: string; texto: string }[] = [
-  { icon: 'acercamiento', titulo: 'Examina', texto: 'la linterna con 5 herramientas' },
+  { icon: 'acercamiento', titulo: 'Revisa', texto: 'la linterna de 5 maneras' },
   { icon: 'libreta', titulo: 'Reúne', texto: 'las 5 pistas en tu libreta' },
   { icon: 'veredicto', titulo: 'Decide', texto: 'si el zorro existe' },
 ];
@@ -51,7 +51,7 @@ export const createApertura: ScreenFactory = (app) => {
         ]),
         h('img', {
           src: `${import.meta.env.BASE_URL}img/linterna.svg`,
-          alt: 'Dibujo de la evidencia A: la linterna.',
+          alt: 'Dibujo de la linterna, la prueba del caso.',
           width: 640,
           height: 260,
           class: 'h-auto w-full max-w-sm',

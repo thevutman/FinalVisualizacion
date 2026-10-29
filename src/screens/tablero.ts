@@ -62,7 +62,7 @@ export const createTablero: ScreenFactory = (app) => {
     const views = createViewSwitch<BoardVisual>(
       'Qué ver',
       [
-        { id: 'tablero', label: 'Tablero', icon: 'tablero' },
+        { id: 'tablero', label: 'Las pistas', icon: 'tablero' },
         ...CHART_IDS.map((id) => ({
           id,
           label: CHARTS[id].etiqueta,

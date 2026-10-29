@@ -26,23 +26,23 @@ export type PieceName = (typeof PIECE_NAMES)[number];
 
 /** Nombre visible de cada pieza. */
 export const PIECE_LABELS: Record<PieceName, string> = {
-  carcasa: 'Cuerpo',
+  carcasa: 'Cuerpo de la linterna',
   cabeza: 'Cabeza',
   reflector: 'Reflector',
-  lente: 'Lente',
-  bombilla: 'Bombilla',
-  portabombilla: 'Portabombilla',
-  pelo: 'Pelo rojizo',
+  lente: 'Vidrio del frente',
+  bombilla: 'Bombillo',
+  portabombilla: 'Base del bombillo',
+  pelo: 'Pelo de zorro',
   resorte: 'Resorte',
-  boton: 'Botón',
-  contacto: 'Contacto',
-  base_interruptor: 'Base',
-  pilas: 'Porta pilas',
+  boton: 'Botón para prender',
+  contacto: 'Lámina de cobre',
+  base_interruptor: 'Base del botón',
+  pilas: 'Pilas',
   tapa: 'Tapa',
   correa: 'Correa',
-  etiqueta_2019: 'Etiqueta',
-  muescas: 'Muescas',
-  huellas: 'Huellas',
+  etiqueta_2019: 'Papel con la fecha',
+  muescas: 'Rayas',
+  huellas: 'Huellas y tierra',
 };
 
 /** Orden y numeración de las piezas en el despiece (de la cabeza a la cola). */

@@ -15,7 +15,7 @@ export const STORY: Story = {
   contexto:
     'Desde 2019 el campus de la UPB acumula ocho casos sin resolver y todos llevan al mismo rumor: el zorro. El Caso 08 es el último.',
   evidencia: {
-    codigo: 'Evidencia A',
+    codigo: 'La prueba',
     nombre: 'La linterna',
     descripcion: 'Una linterna vieja que perteneció al papá del protagonista.',
   },

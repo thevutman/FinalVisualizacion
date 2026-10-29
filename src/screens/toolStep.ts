@@ -53,17 +53,6 @@ export function toolStep(tool: ToolId): ExamView {
         frame.body.replaceChildren();
         frame.nav.replaceChildren(...(back ? [back] : []));
 
-        // Subtítulo con el ícono de la herramienta: qué hace, en palabras simples.
-        // Con la pista ya encontrada se omite para dejar espacio a la ficha.
-        if (nextPhase !== 'hallada') {
-          frame.body.append(
-            h('p', { class: 'flex items-center gap-2 text-xl font-semibold text-coral-ink' }, [
-              icon(tool, 'size-7'),
-              info.explicacion,
-            ]),
-          );
-        }
-
         if (nextPhase === 'inicio') {
           const action = createButton({
             label: info.accion,
@@ -141,7 +130,7 @@ export function toolStep(tool: ToolId): ExamView {
         }
         if (next) {
           const forward = createButton({
-            label: `${UI_TEXT.siguiente}: ${SCREENS[next].nombre}`,
+            label: `${UI_TEXT.siguiente}: ${SCREENS[next].titulo}`,
             iconAfter: 'arrowRight',
             onClick: () => app.go(next),
           });

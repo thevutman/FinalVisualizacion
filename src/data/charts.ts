@@ -18,7 +18,7 @@ export const CHARTS: Record<ChartId, ChartInfo> = {
   casosPorAnio: {
     titulo: 'Casos por año, 2019 a 2025',
     etiqueta: 'Casos por año',
-    conexion: 'Cada muesca de la linterna es un caso: 8 en total.',
+    conexion: 'Cada raya de la linterna es un caso: 8 en total.',
     embedUrl: '',
   },
   mapaCampus: {

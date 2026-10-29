@@ -17,7 +17,7 @@ export const mesaStep: ExamView = {
     frame.body.append(
       h(
         'ol',
-        { class: 'grid gap-1.5', 'aria-label': 'Las 5 herramientas, en orden' },
+        { class: 'grid gap-1.5', 'aria-label': 'Las 5 maneras de revisarla, en orden' },
         TOOL_IDS.map((tool, index) =>
           h('li', { class: 'flex items-center gap-3 rounded-ficha bg-papel-claro px-3 py-1' }, [
             h(
@@ -30,8 +30,8 @@ export const mesaStep: ExamView = {
               [icon(tool)],
             ),
             h('span', { class: 'text-lg leading-tight' }, [
-              h('span', { class: 'font-bold' }, [`${index + 1}. ${TOOLS[tool].nombre}: `]),
-              TOOLS[tool].explicacion.toLowerCase(),
+              h('span', { class: 'font-bold' }, [`${index + 1}. ${TOOLS[tool].nombre} `]),
+              TOOLS[tool].explicacion,
             ]),
           ]),
         ),

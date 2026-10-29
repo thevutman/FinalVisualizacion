@@ -60,7 +60,7 @@ export class Hotspot {
   show(piece: PieceName): void {
     this.piece = piece;
     this.button.hidden = false;
-    this.button.setAttribute('aria-label', `Examinar: ${PIECE_LABELS[piece]}`);
+    this.button.setAttribute('aria-label', `Ver la pista: ${PIECE_LABELS[piece]}`);
     this.panel.invalidate();
   }
 

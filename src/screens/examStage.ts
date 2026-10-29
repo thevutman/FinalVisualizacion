@@ -54,7 +54,7 @@ export function createExamStage(app: AppContext): ExamStage {
     {
       class: 'absolute inset-0',
       role: 'region',
-      'aria-label': 'La linterna en 3D (evidencia A).',
+      'aria-label': 'La linterna en 3D.',
     },
     [sceneHost, overlay, loading, rotateHint],
   );
@@ -86,7 +86,7 @@ export function createExamStage(app: AppContext): ExamStage {
       h('figure', { class: 'grid size-full place-items-center gap-4 p-6 text-center' }, [
         h('img', {
           src: `${import.meta.env.BASE_URL}img/linterna.svg`,
-          alt: 'Dibujo de la linterna: cabeza con lente, cuerpo con interruptor y tapa con correa.',
+          alt: 'Dibujo de la linterna: el frente con el vidrio, el cuerpo con el botón y la tapa con la correa.',
           width: 640,
           height: 260,
           class: 'h-auto w-full max-w-xl',
