@@ -4,7 +4,7 @@ import { createButton } from '../components/Button';
 import { createChartFrame } from '../components/ChartFrame';
 import { createStepFrame } from '../components/StepFrame';
 import { createViewSwitch } from '../components/ViewSwitch';
-import { CHART_IDS, CHARTS, type ChartId } from '../data/charts';
+import { CHARTS, type ChartId } from '../data/charts';
 import { eyebrowFor, neighborsOf, SCREENS, UI_TEXT } from '../data/screens';
 import { h } from '../lib/dom';
 import { duration, EASE_OUT } from '../lib/motion';
@@ -12,6 +12,9 @@ import { store } from '../state/store';
 import type { ScreenFactory } from './types';
 
 type BoardVisual = 'tablero' | ChartId;
+
+/** Gráficos que cierran la investigación: dónde ataca el zorro y cuánto duró cada caso. */
+const BOARD_CHARTS: readonly ChartId[] = ['zonas', 'duracion'];
 
 /**
  * Paso 08 · Tablero de pistas: un botón une las 5 pistas con el Caso 08 y
@@ -27,7 +30,7 @@ export const createTablero: ScreenFactory = (app) => {
 
   const board = createBoard();
   const boardLayer = h('div', { class: 'absolute inset-0' }, [board.element]);
-  const charts = CHART_IDS.map((id) => {
+  const charts = BOARD_CHARTS.map((id) => {
     const chart = createChartFrame(id);
     return {
       id,
@@ -41,7 +44,7 @@ export const createTablero: ScreenFactory = (app) => {
     boardLayer.hidden = visual !== 'tablero';
     for (const { id, chart, layer } of charts) {
       layer.hidden = id !== visual;
-      if (id === visual) chart.load();
+      if (id === visual) chart.show();
     }
     const shown = visual === 'tablero' ? boardLayer : charts.find(({ id }) => id === visual)?.layer;
     if (shown)
@@ -63,11 +66,7 @@ export const createTablero: ScreenFactory = (app) => {
       'Qué ver',
       [
         { id: 'tablero', label: 'Las pistas', icon: 'tablero' },
-        ...CHART_IDS.map((id) => ({
-          id,
-          label: CHARTS[id].etiqueta,
-          icon: id === 'mapaCampus' ? ('map' as const) : ('chart' as const),
-        })),
+        ...BOARD_CHARTS.map((id) => ({ id, label: CHARTS[id].etiqueta, icon: CHARTS[id].icono })),
       ],
       showVisual,
     );

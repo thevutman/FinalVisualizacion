@@ -1,22 +1,24 @@
+import type { BeliefId } from './casos';
+
 export const VERDICT_IDS = ['existe', 'leyenda', 'falta'] as const;
 export type VerdictId = (typeof VERDICT_IDS)[number];
 
 export interface VerdictOption {
   id: VerdictId;
   etiqueta: string;
-  /** Votos de partida del resultado simulado. */
-  base: number;
+  /** Respuesta de la encuesta que equivale a este veredicto. */
+  creencia: BeliefId;
 }
 
 export const VERDICT = {
   pregunta: '¿Cuál es tu veredicto, investigador?',
   sello: 'Caso 08 · Abierto',
-  tituloResultados: 'Lo que votaron otros investigadores',
-  avisoSimulado: 'Resultado simulado: son números de ejemplo, no votos reales.',
+  comparacion: (etiqueta: string) =>
+    `Tu respuesta: «${etiqueta}». Mira qué respondieron los estudiantes.`,
   opciones: [
-    { id: 'existe', etiqueta: 'Sí existe', base: 128 },
-    { id: 'leyenda', etiqueta: 'Es una leyenda', base: 84 },
-    { id: 'falta', etiqueta: 'Faltan pruebas', base: 57 },
+    { id: 'existe', etiqueta: 'Sí existe', creencia: 'real' },
+    { id: 'leyenda', etiqueta: 'Es una leyenda', creencia: 'falso' },
+    { id: 'falta', etiqueta: 'Faltan pruebas', creencia: 'noSabe' },
   ] satisfies VerdictOption[],
   compartir: {
     boton: 'Compartir el caso',

@@ -70,11 +70,23 @@ Todo el texto vive en `src/data/`:
 - `clues.ts`: las 5 pistas (texto, herramienta y pieza que las revela).
 - `pieces.ts`: nombre y función de cada pieza y el orden del despiece.
 - `tools.ts`: nombre, explicación sencilla y texto del botón de cada herramienta.
-- `charts.ts`: **pega aquí las URL de embed de Flourish** (`https://flo.uri.sh/visualisation/…/embed`). Cada gráfico tiene título, nombre corto y la frase que lo une a su pista. Mientras la URL esté vacía, su lugar muestra un recuadro que dice qué gráfico va ahí.
+- `casos.ts`: los datos de los gráficos, tomados de la infografía del proyecto ("Sala del detective"): los 8 casos con año, zona, posición en el mapa y semanas, y la encuesta de 100 estudiantes.
+- `charts.ts`: título, nombre corto y frase de cada gráfico.
 - `story.ts`: **pega aquí la cita final exacta del cuento** (aparece en el veredicto). Mientras sea `null`, no se muestra. No hay texto del cuento inventado.
-- `verdict.ts`: opciones del veredicto y votos de partida del resultado simulado. La interfaz aclara que es simulado.
+- `verdict.ts`: opciones del veredicto y a qué respuesta de la encuesta equivale cada una.
 
 La paleta y las fuentes son provisionales. Para usar las de la infografía, cambia `colors` y `fontFamily` en `tailwind.config.ts` y el enlace de Google Fonts en `index.html`.
+
+## Los gráficos
+
+Son 5 de los 8 gráficos de la infografía del proyecto, rehechos en SVG dentro de la app (`src/components/charts/`) para que quepan en pantalla, tengan letra grande y se animen al aparecer. Cada uno tiene su texto para lector de pantalla.
+
+| Dónde aparece                                    | Gráfico                                                                      | Archivo                                    |
+| ------------------------------------------------ | ---------------------------------------------------------------------------- | ------------------------------------------ |
+| Paso 5 · Mirar por dentro (8 rayas)              | Casos por año: un cuadro por caso, del color de su zona                      | `YearlyChart.ts`                           |
+| Paso 7 · Mirar con lupa (tierra del parqueadero) | Los 8 casos en el mapa del campus                                            | `CaseMap.ts` (usa `public/img/campus.png`) |
+| Paso 8 · Unir las pistas                         | ¿Dónde ataca el zorro? y ¿Cuánto duró cada caso?                             | `ZonesChart.ts`, `DurationChart.ts`        |
+| Paso 9 · Veredicto                               | ¿El zorro es real? (100 estudiantes), con la respuesta del usuario resaltada | `BeliefChart.ts`                           |
 
 ## El modelo 3D
 
@@ -115,6 +127,6 @@ Si `linterna.glb` no existe, se usa entera la linterna provisional hecha con for
 - En celular la linterna queda arriba y el panel se desplaza por dentro (con letra grande no cabe todo en 100vh); la página en sí no hace scroll.
 - Con `prefers-reduced-motion` las animaciones duran 0 y los cambios son directos.
 - Sin WebGL se muestra un dibujo estático de la linterna y el caso se resuelve igual con "Mostrarme la pista".
-- Three.js, el modelo y la escena se cargan de forma diferida al entrar a la mesa. Cada iframe de Flourish se crea la primera vez que se muestra su gráfico. El pixel ratio se limita a 2 y la escena solo se dibuja cuando algo cambia.
+- Three.js, el modelo y la escena se cargan de forma diferida al entrar a la mesa. Cada gráfico se dibuja la primera vez que se muestra. El pixel ratio se limita a 2 y la escena solo se dibuja cuando algo cambia.
 
 Al publicar, cambia `og:image` en `index.html` por la URL absoluta del sitio: algunas redes no aceptan rutas relativas.

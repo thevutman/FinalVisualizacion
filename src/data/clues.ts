@@ -16,7 +16,7 @@ export interface Clue {
   /** Frase de la pista tal como aparece en la ficha. */
   resumen: string;
   detalle: string;
-  /** Gráfico de Flourish que abre la pista (opcional). */
+  /** Gráfico que abre la pista (opcional). */
   dato?: ChartId;
 }
 
@@ -70,7 +70,7 @@ export const CLUES: Record<ClueId, Clue> = {
     resumen: 'Huellas de mano y de pata, con tierra',
     detalle:
       'Con la lupa aparecen huellas de mano y de pata, una encima de otra, con tierra del parqueadero.',
-    dato: 'mapaCampus',
+    dato: 'mapaCasos',
   },
 };
 

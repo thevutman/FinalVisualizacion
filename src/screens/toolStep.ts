@@ -111,7 +111,7 @@ export function toolStep(tool: ToolId): ExamView {
               {
                 id: chartId,
                 label: CHARTS[chartId].etiqueta,
-                icon: chartId === 'mapaCampus' ? 'map' : 'chart',
+                icon: CHARTS[chartId].icono,
               },
             ],
             showVisual,

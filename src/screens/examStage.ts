@@ -1,7 +1,7 @@
 import gsap from 'gsap';
 import { createChartFrame } from '../components/ChartFrame';
 import { createStepFrame } from '../components/StepFrame';
-import { CHART_IDS } from '../data/charts';
+import { CLUE_LIST, type Clue } from '../data/clues';
 import { UI_TEXT, eyebrowFor, SCREENS } from '../data/screens';
 import { h } from '../lib/dom';
 import { icon } from '../lib/icons';
@@ -10,7 +10,6 @@ import { isWebGLAvailable } from '../lib/webgl';
 import type { EvidenceStage } from '../scenes/EvidenceStage';
 import { store } from '../state/store';
 import type { AppContext, ExamPanel, ExamView, ExamVisual } from './types';
-import type { Clue } from '../data/clues';
 
 export interface ExamStage {
   element: HTMLElement;
@@ -58,7 +57,9 @@ export function createExamStage(app: AppContext): ExamStage {
     },
     [sceneHost, overlay, loading, rotateHint],
   );
-  const charts = CHART_IDS.map((id) => {
+  // Los gráficos que abren las pistas de la linterna (rayas y huellas).
+  const chartIds = CLUE_LIST.flatMap((clue) => (clue.dato ? [clue.dato] : []));
+  const charts = chartIds.map((id) => {
     const chart = createChartFrame(id);
     const layer = h('div', { class: 'absolute inset-0', hidden: true }, [chart.element]);
     return { id, chart, layer };
@@ -70,7 +71,7 @@ export function createExamStage(app: AppContext): ExamStage {
     if (!target?.hidden) return;
     for (const { id, chart, layer } of charts) {
       layer.hidden = id !== visual;
-      if (id === visual) chart.load();
+      if (id === visual) chart.show();
     }
     linterna.hidden = visual !== 'linterna';
     if (target)

@@ -1,7 +1,8 @@
 import gsap from 'gsap';
 import { createButton } from '../components/Button';
 import { createStepFrame } from '../components/StepFrame';
-import { createVerdictResults } from '../components/VerdictResults';
+import { createBeliefChart } from '../components/charts/BeliefChart';
+import { CHARTS } from '../data/charts';
 import { CLUE_LIST } from '../data/clues';
 import { eyebrowFor, neighborsOf, SCREENS, UI_TEXT } from '../data/screens';
 import { STORY } from '../data/story';
@@ -50,8 +51,24 @@ export const createVeredictoScreen: ScreenFactory = (app) => {
       ),
     ],
   );
-  const results = createVerdictResults();
-  const resultsLayer = h('div', { class: 'absolute inset-0', hidden: true }, [results.element]);
+  // Después de votar: la encuesta a 100 estudiantes, con la respuesta del usuario resaltada.
+  const belief = createBeliefChart();
+  const comparison = h('span', { class: 'block text-lg text-tinta' });
+  const resultsLayer = h('div', { class: 'absolute inset-0', hidden: true }, [
+    h('figure', { class: 'flex size-full flex-col gap-4 bg-papel-claro p-4 lg:p-6' }, [
+      h('figcaption', { class: 'flex items-start gap-3' }, [
+        icon(CHARTS.creencia.icono, 'mt-1 size-7 text-coral-ink'),
+        h('span', {}, [
+          h('span', { class: 'block font-display text-2xl font-extrabold' }, [
+            CHARTS.creencia.titulo,
+          ]),
+          comparison,
+          h('span', { class: 'block text-base text-tinta-suave' }, [CHARTS.creencia.conexion]),
+        ]),
+      ]),
+      h('div', { class: 'min-h-0 flex-1' }, [belief.element]),
+    ]),
+  ]);
   frame.visual.append(cover, resultsLayer);
 
   const options = VERDICT.opciones.map((option) => {
@@ -133,7 +150,10 @@ export const createVeredictoScreen: ScreenFactory = (app) => {
     cover.hidden = true;
     resultsLayer.hidden = false;
     after.hidden = false;
-    results.show(verdict);
+    const option = VERDICT.opciones.find((item) => item.id === verdict);
+    comparison.textContent = option ? VERDICT.comparacion(option.etiqueta) : '';
+    belief.highlight(option?.creencia ?? null);
+    belief.animate();
     gsap.fromTo(
       resultsLayer,
       { opacity: 0 },
